@@ -8,7 +8,6 @@ import {map, shareReplay} from 'rxjs/operators';
 import {CoursesHttpService} from '../services/courses-http.service';
 import { AuthState } from '../../auth/reducers';
 import { Store, select } from '@ngrx/store';
-import { isLoggedIn } from '../../auth/auth.selectors';
 import { Router } from '@angular/router';
 
 
@@ -31,17 +30,11 @@ export class HomeComponent implements OnInit {
 
     constructor(
       private dialog: MatDialog,
-      private coursesHttpService: CoursesHttpService,
-      private store: Store<AuthState>,
-      private router: Router) {
+      private coursesHttpService: CoursesHttpService) {
 
     }
 
     ngOnInit() {
-      this.store.pipe(select(isLoggedIn)).subscribe(isLoggedIn => {
-        if(!isLoggedIn)
-          this.router.navigateByUrl('/')
-      });
       this.reload();
     }
 

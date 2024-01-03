@@ -8,7 +8,6 @@ import { tap } from "rxjs/operators";
 import { Router } from "@angular/router";
 import { AuthState } from '../reducers';
 import { AuthActions } from '../auth-types';
-import { isLoggedIn } from '../auth.selectors';
 
 @Component({
   selector: 'login',
@@ -32,10 +31,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.pipe(select(isLoggedIn)).subscribe(isLoggedIn => {
-      if(isLoggedIn)
-        this.router.navigateByUrl('courses')
-    });
   }
 
   login() {
