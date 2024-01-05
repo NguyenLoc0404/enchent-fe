@@ -2,9 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {select, State, Store} from "@ngrx/store";
 import {Observable} from "rxjs";
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
-import { AuthState } from './auth/reducers';
 import { isLoggedIn, isLoggedOut } from './auth/auth.selectors';
 import { AuthActions } from './auth/auth-types';
+import { AppState } from './reducers';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
     loading = true;
     isLoggedIn$ : Observable<boolean>;
     isLoggedOut$ : Observable<boolean>;
-    constructor(private router: Router, private store: Store<AuthState>) {
+    constructor(private router: Router, private store: Store<AppState>) {
 
     }
 
