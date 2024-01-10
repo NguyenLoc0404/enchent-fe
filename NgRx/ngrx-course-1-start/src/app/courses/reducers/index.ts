@@ -10,26 +10,21 @@ import {
 } from '@ngrx/store';
 import { Course } from '../model/course';
 import { CoursesActions } from '../action-types';
-import { EntityState } from '@ngrx/entity';
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
 
 export interface CourseState extends EntityState<Course>{
-  courses: Course[]
 }
+export const adapter = createEntityAdapter<Course>();
 
-export const coursesFeatureKey = 'courses';
+export const initialCourseState = adapter.getInitialState();
 
-export const intialCourseState: CourseState = {
-  courses: undefined
-}
-
-export const courseReducer = createReducer(
-  intialCourseState,
+export const coursesReducer = createReducer(
+  initialCourseState,
   on(CoursesActions.allCoursesLoaded, (state, action) => {
-    return {
-      courses: action['courses']
-    }
-  }),
-  on(CoursesActions.loadAllCourses, (state, action) => state)
+    console.log('state adapter',state);
+    console.log('action',action);
+    return adapter.addMany(action.courses,state)
+  })
 )
 
 
