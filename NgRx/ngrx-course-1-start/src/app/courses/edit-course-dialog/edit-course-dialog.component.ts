@@ -1,12 +1,13 @@
-import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Course} from '../model/course';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable} from 'rxjs';
-import {CoursesHttpService} from '../services/courses-http.service';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Course } from '../model/course';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { CoursesHttpService } from '../services/courses-http.service';
 import { AppState } from '../../reducers';
 import { Store } from '@ngrx/store';
 import { courseUpdated } from '../course.action';
+import { Update } from '@ngrx/entity';
 
 @Component({
   selector: 'course-dialog',
@@ -23,7 +24,7 @@ export class EditCourseDialogComponent {
 
   mode: 'create' | 'update';
 
-  loading$:Observable<boolean>;
+  loading$: Observable<boolean>;
 
   constructor(
     private fb: FormBuilder,
@@ -45,7 +46,7 @@ export class EditCourseDialogComponent {
 
     if (this.mode == 'update') {
       this.form = this.fb.group(formControls);
-      this.form.patchValue({...data.course});
+      this.form.patchValue({ ...data.course });
     }
     else if (this.mode == 'create') {
       this.form = this.fb.group({
@@ -66,14 +67,12 @@ export class EditCourseDialogComponent {
       ...this.form.value
     };
 
-    this.store.dispatch(courseUpdated({course:course}))
-
-    this.coursesService.saveCourse(course.id, course)
-      .subscribe(
-        () => this.dialogRef.close()
-      )
-
-
+    const update: Update<Course> = {
+      id: course.id,
+      changes: course
+    }
+    this.store.dispatch(courseUpdated({ course: update }))
+    this.dialogRef.close()
   }
 
 
