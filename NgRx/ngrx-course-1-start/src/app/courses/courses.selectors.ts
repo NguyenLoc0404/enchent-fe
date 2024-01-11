@@ -6,7 +6,6 @@ export const selectAllCourses = createSelector(
     selectCoursesState,
     selectAll
 )
-
 export const selectBeginnerCourses = createSelector(
     selectAllCourses,
     courses => courses.filter(course => course.category == 'BEGINNER')
@@ -20,4 +19,9 @@ export const selectAdvancedCourses = createSelector(
 export const selectPromoTotal = createSelector(
     selectAllCourses,
     courses => courses.filter(course => course.promo).length
+)
+
+export const areCoursesLoaded = createSelector(
+    selectCoursesState,
+    state => state.allCoursesLoaded
 )

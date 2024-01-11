@@ -9,3 +9,8 @@ export const allCoursesLoaded = createAction(
     "[Load Courses Effect] All Courses Loaded",
     props<{courses: Course[]}>()
 )
+
+export const courseUpdated = createAction(
+    "[Course Update] Update Course",
+    props<{course: Course}>()
+)
