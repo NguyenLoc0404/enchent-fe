@@ -8,23 +8,23 @@ import {
   MetaReducer,
   on
 } from '@ngrx/store';
-import { Course } from '../model/course';
+import { compareCourses, Course } from '../model/course';
 import { CoursesActions } from '../action-types';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 
-export interface CourseState extends EntityState<Course>{
+export interface CoursesState extends EntityState<Course> {
 }
-export const adapter = createEntityAdapter<Course>();
+export const adapter = createEntityAdapter<Course>({
+  sortComparer: compareCourses
+});
 
 export const initialCourseState = adapter.getInitialState();
 
 export const coursesReducer = createReducer(
   initialCourseState,
   on(CoursesActions.allCoursesLoaded, (state, action) => {
-    console.log('state adapter',state);
-    console.log('action',action);
-    return adapter.addMany(action.courses,state)
+    return adapter.addMany(action.courses, state)
   })
 )
 
-
+export const { selectAll } = adapter.getSelectors();

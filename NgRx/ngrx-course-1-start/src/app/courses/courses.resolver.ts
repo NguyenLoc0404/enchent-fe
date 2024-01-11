@@ -15,8 +15,9 @@ export class CoursesResolver implements Resolve<any> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
         return this.store
             .pipe(
-                tap(() => {
-                    if (!this.loading) {
+                tap((resolve: any) => {
+                    console.log('resolve',resolve);
+                    if (!this.loading && resolve.courses.ids.length == 0) {
                         this.loading = true;
                         this.store.dispatch(loadAllCourses());
                     }

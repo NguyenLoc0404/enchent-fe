@@ -9,6 +9,8 @@ import {CoursesHttpService} from '../services/courses-http.service';
 import { AuthState } from '../../auth/reducers';
 import { Store, select } from '@ngrx/store';
 import { Router } from '@angular/router';
+import { AppState } from '../../reducers';
+import { selectAdvancedCourses, selectAllCourses, selectBeginnerCourses, selectPromoTotal } from '../courses.selectors';
 
 
 
@@ -30,8 +32,9 @@ export class HomeComponent implements OnInit {
 
     constructor(
       private dialog: MatDialog,
-      private coursesHttpService: CoursesHttpService) {
-
+      private coursesHttpService: CoursesHttpService,
+      private store: Store<AppState>) {
+      
     }
 
     ngOnInit() {
@@ -40,30 +43,11 @@ export class HomeComponent implements OnInit {
 
   reload() {
 
-    const courses$ = this.coursesHttpService.findAllCourses()
-      .pipe(
-        map(courses => courses.sort(compareCourses)),
-        shareReplay()
-      );
+    this.beginnerCourses$ = this.store.pipe(select(selectBeginnerCourses))
 
-    this.loading$ = courses$.pipe(map(courses => !!courses));
+    this.advancedCourses$ = this.store.pipe(select(selectAdvancedCourses))
 
-    this.beginnerCourses$ = courses$
-      .pipe(
-        map(courses => courses.filter(course => course.category == 'BEGINNER'))
-      );
-
-
-    this.advancedCourses$ = courses$
-      .pipe(
-        map(courses => courses.filter(course => course.category == 'ADVANCED'))
-      );
-
-    this.promoTotal$ = courses$
-        .pipe(
-            map(courses => courses.filter(course => course.promo).length)
-        );
-
+    this.promoTotal$ = this.store.pipe(select(selectPromoTotal))
   }
 
   onAddCourse() {
