@@ -1,53 +1,64 @@
-import {Component, OnInit} from '@angular/core';
-import {compareCourses, Course} from '../model/course';
-import {Observable} from "rxjs";
-import {defaultDialogConfig} from '../shared/default-dialog-config';
-import {EditCourseDialogComponent} from '../edit-course-dialog/edit-course-dialog.component';
+import { Component, OnInit } from '@angular/core';
+import { compareCourses, Course } from '../model/course';
+import { Observable } from "rxjs";
+import { defaultDialogConfig } from '../shared/default-dialog-config';
+import { EditCourseDialogComponent } from '../edit-course-dialog/edit-course-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import {map, shareReplay} from 'rxjs/operators';
-import {CoursesHttpService} from '../services/courses-http.service';
+import { map, shareReplay } from 'rxjs/operators';
+import { CoursesHttpService } from '../services/courses-http.service';
 import { AuthState } from '../../auth/reducers';
 import { Store, select } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { AppState } from '../../reducers';
 import { selectAdvancedCourses, selectAllCourses, selectBeginnerCourses, selectPromoTotal } from '../courses.selectors';
+import { CourseEntityService } from '../services/course-entity.service';
 
 
 
 @Component({
-    selector: 'home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css']
+  selector: 'home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
 
-    promoTotal$: Observable<number>;
+  promoTotal$: Observable<number>;
 
-    loading$: Observable<boolean>;
+  loading$: Observable<boolean>;
 
-    beginnerCourses$: Observable<Course[]>;
+  beginnerCourses$: Observable<Course[]>;
 
-    advancedCourses$: Observable<Course[]>;
+  advancedCourses$: Observable<Course[]>;
 
 
-    constructor(
-      private dialog: MatDialog,
-      private coursesHttpService: CoursesHttpService,
-      private store: Store<AppState>) {
-      
-    }
+  constructor(
+    private dialog: MatDialog,
+    private coursesService: CourseEntityService,
+    private store: Store<AppState>) {
 
-    ngOnInit() {
-      this.reload();
-    }
+  }
+
+  ngOnInit() {
+    this.reload();
+  }
 
   reload() {
 
-    this.beginnerCourses$ = this.store.pipe(select(selectBeginnerCourses))
+    this.beginnerCourses$ = this.coursesService.entities$
+      .pipe(
+        map(courses => courses.filter(course => course.category == 'BEGINNER'))
+      );
 
-    this.advancedCourses$ = this.store.pipe(select(selectAdvancedCourses))
 
-    this.promoTotal$ = this.store.pipe(select(selectPromoTotal))
+    this.advancedCourses$ = this.coursesService.entities$
+      .pipe(
+        map(courses => courses.filter(course => course.category == 'ADVANCED'))
+      );
+
+    this.promoTotal$ = this.coursesService.entities$
+      .pipe(
+        map(courses => courses.filter(course => course.promo).length)
+      );
   }
 
   onAddCourse() {
@@ -55,7 +66,7 @@ export class HomeComponent implements OnInit {
     const dialogConfig = defaultDialogConfig();
 
     dialogConfig.data = {
-      dialogTitle:"Create Course",
+      dialogTitle: "Create Course",
       mode: 'create'
     };
 
